@@ -30,4 +30,4 @@ jobs:
           API_ID: ${{ secrets.API_ID }}
           API_HASH: ${{ secrets.API_HASH }}
           SESSION_NAME: my_session  # Nama fail sesi
-        run: python send_message.py
+        run: python post.py
