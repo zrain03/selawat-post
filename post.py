@@ -20,11 +20,11 @@ client = TelegramClient(session_name, api_id, api_hash)
 async def send_message_repeatedly():
     await client.start()  # Log masuk jika belum log masuk
     
-    # Calculate time until next 4:45 PM (Malaysia Time)
+    # Calculate time until next 4:50 PM (Malaysia Time)
     def calculate_time_to_post():
         current_time = time.localtime()
         target_hour = 16  # 4:00 PM
-        target_minute = 45  # 45 minutes
+        target_minute = 50  # 50 minutes
         target_time = time.mktime((current_time.tm_year, current_time.tm_mon, current_time.tm_mday,
                                    target_hour, target_minute, 0, current_time.tm_wday, current_time.tm_yday,
                                    current_time.tm_isdst))
@@ -37,9 +37,9 @@ async def send_message_repeatedly():
         return delay
 
     try:
-        # Wait until the scheduled time (4:45 PM)
+        # Wait until the scheduled time (4:50 PM)
         delay = calculate_time_to_post()
-        print(f"Waiting for {delay} seconds until 4:45 PM...")
+        print(f"Waiting for {delay} seconds until 4:50 PM...")
         await asyncio.sleep(delay)
 
         # After waiting, send messages
