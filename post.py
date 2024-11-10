@@ -2,6 +2,7 @@ from telethon import TelegramClient, errors
 import asyncio
 import os
 import time
+import pytz
 
 # Dapatkan API_ID, API_HASH dan nama fail sesi dari environment variables
 api_id = int(os.getenv("API_ID"))
@@ -22,18 +23,19 @@ async def send_message_repeatedly():
     
     # Calculate time until next 4:50 PM (Malaysia Time)
     def calculate_time_to_post():
+        mytz = pytz.timezone("Asia/Kuala_Lumpur")
         current_time = time.localtime()
-        target_hour = 16  # 4:00 PM
-        target_minute = 50  # 50 minutes
-        target_time = time.mktime((current_time.tm_year, current_time.tm_mon, current_time.tm_mday,
-                                   target_hour, target_minute, 0, current_time.tm_wday, current_time.tm_yday,
-                                   current_time.tm_isdst))
-        current_epoch = time.mktime(current_time)
-        delay = target_time - current_epoch
+        current_time = time.mktime(current_time)
+        current_time = pytz.utc.localize(time.gmtime(current_time)).astimezone(mytz)  # Convert to MYT
 
-        if delay < 0:
-            # If target time has already passed for today, schedule for tomorrow
-            delay += 86400  # Add 24 hours worth of seconds
+        # Target time (4:50 PM Malaysia Time)
+        target_time = current_time.replace(hour=16, minute=50, second=0, microsecond=0)
+        
+        if current_time > target_time:
+            # If target time has passed for today, set for tomorrow
+            target_time = target_time + timedelta(days=1)
+
+        delay = (target_time - current_time).total_seconds()
         return delay
 
     try:
