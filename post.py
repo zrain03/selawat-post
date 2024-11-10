@@ -3,7 +3,6 @@ import asyncio
 import os
 import time
 import pytz
-from datetime import timedelta
 
 # Dapatkan API_ID, API_HASH dan nama fail sesi dari environment variables
 api_id = int(os.getenv("API_ID"))
@@ -22,30 +21,30 @@ client = TelegramClient(session_name, api_id, api_hash)
 async def send_message_repeatedly():
     await client.start()  # Log masuk jika belum log masuk
     
-    # Calculate time until next 5:05 PM (Malaysia Time)
+    # Kirakan masa sehingga 5:30 PM (Waktu Malaysia)
     def calculate_time_to_post():
-        mytz = pytz.timezone("Asia/Kuala_Lumpur")
         current_time = time.localtime()
-        current_time = time.mktime(current_time)
-        current_time = pytz.utc.localize(time.gmtime(current_time)).astimezone(mytz)  # Convert to MYT
+        # Set target time to 5:30 PM MYT (Malaysia Time)
+        target_hour = 17  # 5:00 PM
+        target_minute = 30  # 30 minutes
+        target_time = time.mktime((current_time.tm_year, current_time.tm_mon, current_time.tm_mday,
+                                   target_hour, target_minute, 0, current_time.tm_wday, current_time.tm_yday,
+                                   current_time.tm_isdst))
+        current_epoch = time.mktime(current_time)
+        delay = target_time - current_epoch
 
-        # Target time (5:05 PM Malaysia Time)
-        target_time = current_time.replace(hour=17, minute=5, second=0, microsecond=0)
-        
-        if current_time > target_time:
-            # If target time has passed for today, set for tomorrow
-            target_time = target_time + timedelta(days=1)
-
-        delay = (target_time - current_time).total_seconds()
+        if delay < 0:
+            # If target time has already passed for today, schedule for tomorrow
+            delay += 86400  # Add 24 hours worth of seconds
         return delay
 
     try:
-        # Wait until the scheduled time (5:05 PM)
+        # Tunggu sehingga masa yang dijadualkan (5:30 PM)
         delay = calculate_time_to_post()
-        print(f"Waiting for {delay} seconds until 5:05 PM...")
+        print(f"Waiting for {delay} seconds until 5:30 PM...")
         await asyncio.sleep(delay)
 
-        # After waiting, send messages
+        # Setelah menunggu, hantar mesej
         for group_id in group_ids:
             await client.send_message(group_id, message)
             print(f"Mesej dihantar ke kumpulan {group_id}!")
