@@ -3,6 +3,7 @@ import asyncio
 import os
 import time
 import pytz
+from datetime import timedelta
 
 # Dapatkan API_ID, API_HASH dan nama fail sesi dari environment variables
 api_id = int(os.getenv("API_ID"))
@@ -21,15 +22,15 @@ client = TelegramClient(session_name, api_id, api_hash)
 async def send_message_repeatedly():
     await client.start()  # Log masuk jika belum log masuk
     
-    # Calculate time until next 4:50 PM (Malaysia Time)
+    # Calculate time until next 5:05 PM (Malaysia Time)
     def calculate_time_to_post():
         mytz = pytz.timezone("Asia/Kuala_Lumpur")
         current_time = time.localtime()
         current_time = time.mktime(current_time)
         current_time = pytz.utc.localize(time.gmtime(current_time)).astimezone(mytz)  # Convert to MYT
 
-        # Target time (4:50 PM Malaysia Time)
-        target_time = current_time.replace(hour=16, minute=50, second=0, microsecond=0)
+        # Target time (5:05 PM Malaysia Time)
+        target_time = current_time.replace(hour=17, minute=5, second=0, microsecond=0)
         
         if current_time > target_time:
             # If target time has passed for today, set for tomorrow
@@ -39,9 +40,9 @@ async def send_message_repeatedly():
         return delay
 
     try:
-        # Wait until the scheduled time (4:50 PM)
+        # Wait until the scheduled time (5:05 PM)
         delay = calculate_time_to_post()
-        print(f"Waiting for {delay} seconds until 4:50 PM...")
+        print(f"Waiting for {delay} seconds until 5:05 PM...")
         await asyncio.sleep(delay)
 
         # After waiting, send messages
