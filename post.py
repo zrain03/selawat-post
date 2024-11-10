@@ -1,6 +1,7 @@
 from telethon import TelegramClient, errors
 import asyncio
 import os
+import time
 
 # Dapatkan API_ID, API_HASH dan nama fail sesi dari environment variables
 api_id = int(os.getenv("API_ID"))
@@ -15,26 +16,43 @@ Allahumma salli wasallim 'ala Sayyidina Muhammad"""
 # Buat klien Telegram
 client = TelegramClient(session_name, api_id, api_hash)
 
-# Fungsi untuk menghantar mesej 100 kali
+# Fungsi untuk menghantar mesej
 async def send_message_repeatedly():
     await client.start()  # Log masuk jika belum log masuk
+    
+    # Calculate time until next 4:45 PM (Malaysia Time)
+    def calculate_time_to_post():
+        current_time = time.localtime()
+        target_hour = 16  # 4:00 PM
+        target_minute = 45  # 45 minutes
+        target_time = time.mktime((current_time.tm_year, current_time.tm_mon, current_time.tm_mday,
+                                   target_hour, target_minute, 0, current_time.tm_wday, current_time.tm_yday,
+                                   current_time.tm_isdst))
+        current_epoch = time.mktime(current_time)
+        delay = target_time - current_epoch
+
+        if delay < 0:
+            # If target time has already passed for today, schedule for tomorrow
+            delay += 86400  # Add 24 hours worth of seconds
+        return delay
+
     try:
-        # Cuba untuk mengakses kumpulan
+        # Wait until the scheduled time (4:45 PM)
+        delay = calculate_time_to_post()
+        print(f"Waiting for {delay} seconds until 4:45 PM...")
+        await asyncio.sleep(delay)
+
+        # After waiting, send messages
         for group_id in group_ids:
-            await client.get_entity(group_id)
+            await client.send_message(group_id, message)
+            print(f"Mesej dihantar ke kumpulan {group_id}!")
+
     except errors.ChatAdminRequiredError:
         print("Akses ke kumpulan ini tidak dibenarkan.")
         return
     except ValueError:
         print("ID kumpulan tidak sah atau anda tidak mempunyai akses.")
         return
-
-    # Hantar mesej kepada setiap kumpulan
-    for i in range(5):
-        for group_id in group_ids:
-            await client.send_message(group_id, message)
-            print(f"Mesej ke-{i+1} telah dihantar ke kumpulan {group_id}!")
-        await asyncio.sleep(60)  # Tunggu 3600 saat / 1 jam antara mesej
 
 # Jalankan fungsi untuk menghantar mesej
 with client:
