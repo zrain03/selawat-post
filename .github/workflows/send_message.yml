@@ -2,8 +2,8 @@ name: Send Telegram Messages
 
 on:
   schedule:
-    # This will run at 4:45 PM Malaysia time (UTC+8) every day
-    - cron: '45 16 * * *'  # 4:45 PM UTC+8 (Malaysia Time)
+    # This will run at 4:50 PM Malaysia Time (UTC+8)
+    - cron: '50 8 * * *'  # 4:50 PM Malaysia Time is 8:50 AM UTC
 
 jobs:
   sendMessages:
