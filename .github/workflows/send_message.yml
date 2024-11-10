@@ -2,8 +2,9 @@ name: Send Telegram Messages
 
 on:
   schedule:
-    # This will run at 4:50 PM Malaysia Time (UTC+8)
-    - cron: '50 8 * * *'  # 4:50 PM Malaysia Time is 8:50 AM UTC
+    # Cron untuk menjadualkan pada 4:50 PM Malaysia Time (UTC+8), yang bersamaan dengan 8:50 AM UTC
+    - cron: '50 8 * * *'  # 4:50 PM MYT = 8:50 AM UTC
+  workflow_dispatch:  # Ini membolehkan manual run juga
 
 jobs:
   sendMessages:
