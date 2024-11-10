@@ -2,8 +2,8 @@ name: Send Telegram Messages
 
 on:
   schedule:
-    # Cron untuk menjadualkan pada 5:05 PM Malaysia Time (UTC+8), yang bersamaan dengan 10:05 AM UTC
-    - cron: '5 10 * * *'  # 5:05 PM MYT = 10:05 AM UTC
+    # Cron untuk menjadualkan pada 5:30 PM Malaysia Time (UTC+8), yang bersamaan dengan 10:30 AM UTC
+    - cron: '30 10 * * *'  # 5:30 PM MYT = 10:30 AM UTC
   workflow_dispatch:  # Ini membolehkan manual run juga
 
 jobs:
@@ -20,7 +20,9 @@ jobs:
           python-version: '3.8'
 
       - name: Install dependencies
-        run: pip install telethon
+        run: |
+          pip install telethon
+          pip install pytz  # Install pytz library to fix the error
 
       - name: Decode and save session file
         env:
