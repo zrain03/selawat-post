@@ -8,7 +8,7 @@ api_hash = os.getenv("API_HASH")
 session_name = os.getenv("SESSION_NAME", "my_session")  # Nama fail sesi yang digunakan
 
 # ID kumpulan dan mesej yang ingin dihantar
-group_ids = [-1002071108412, -1002341101931]  # ID kumpulan "Testing for MP CHAT" dan satu lagi kumpulan
+group_ids = [-1002288720559, -1002200241778]  # ID kumpulan "Testing for MP CHAT" dan satu lagi kumpulan
 message = "اللّٰهُمَّ صَلِّ وَسَلِّمْ عَلٰى سَيِّدِنَا مُحَمَّد
 "Allahumma salli wasallim 'ala Sayyidina Muhammad
 
