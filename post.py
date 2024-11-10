@@ -30,7 +30,7 @@ async def send_message_repeatedly():
         return
 
     # Hantar mesej kepada setiap kumpulan
-    for i in range(1):
+    for i in range(5):
         for group_id in group_ids:
             await client.send_message(group_id, message)
             print(f"Mesej ke-{i+1} telah dihantar ke kumpulan {group_id}!")
