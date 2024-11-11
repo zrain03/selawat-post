@@ -2,9 +2,9 @@ name: Send Telegram Messages
 
 on:
   schedule:
-    # Cron untuk menjadualkan pada 5:00 PM Malaysia Time (UTC+8), yang bersamaan dengan 9:00 AM UTC
+    # Cron for scheduling at 5:00 PM Malaysia Time (UTC+8), which is equivalent to 9:00 AM UTC
     - cron: '0 9 * * *'  # 5:00 PM MYT = 9:00 AM UTC
-  workflow_dispatch:  # Ini membolehkan manual run juga
+  workflow_dispatch:  # This allows manual run also
 
 jobs:
   sendMessages:
@@ -22,17 +22,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install telethon
-          pip install pytz  # Install pytz library to fix the error
+          pip install pytz  # Install pytz library to handle timezones
 
       - name: Decode and save session file
         env:
           SESSION_BASE64: ${{ secrets.SESSION_BASE64 }}
         run: |
+          # Decode the base64 session string into a file
           echo "$SESSION_BASE64" | base64 --decode > my_session.session
 
       - name: Run Python script
         env:
           API_ID: ${{ secrets.API_ID }}
           API_HASH: ${{ secrets.API_HASH }}
-          SESSION_NAME: my_session  # Nama fail sesi
+          SESSION_NAME: my_session  # Use the decoded session file
         run: python post.py
