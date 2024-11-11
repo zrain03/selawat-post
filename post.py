@@ -4,58 +4,62 @@ import os
 import time
 import pytz
 
-# Dapatkan API_ID, API_HASH dan nama fail sesi dari environment variables
+# Get API_ID, API_HASH, and session file name from environment variables
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
-session_name = os.getenv("SESSION_NAME", "my_session")  # Nama fail sesi yang digunakan
+session_name = os.getenv("SESSION_NAME", "my_session")  # Session file name used
 
-# ID kumpulan dan mesej yang ingin dihantar
-group_ids = [-1002288720559, -1002200241778]  # ID kumpulan "Testing for MP CHAT" dan satu lagi kumpulan
+# Group IDs and message to be sent
+group_ids = [-1002288720559, -1002200241778]  # Replace with your actual group IDs
 message = """اللّٰهُمَّ صَلِّ وَسَلِّمْ عَلٰى سَيِّدِنَا مُحَمَّد
 Allahumma salli wasallim 'ala Sayyidina Muhammad"""
 
-# Buat klien Telegram
+# Create the Telegram client
 client = TelegramClient(session_name, api_id, api_hash)
 
-# Fungsi untuk menghantar mesej
+# Function to send the message at the scheduled time
 async def send_message_repeatedly():
-    await client.start()  # Log masuk jika belum log masuk
+    await client.start()  # Log in if not already logged in
     
-    # Kirakan masa sehingga 5:00 PM (Waktu Malaysia)
+    # Calculate time to the next 5:00 PM (MYT)
     def calculate_time_to_post():
+        # Set timezone to MYT (Malaysia Time, UTC+8)
+        timezone = pytz.timezone('Asia/Kuala_Lumpur')
         current_time = time.localtime()
-        # Set target time to 5:00 PM MYT (Malaysia Time)
+        
+        # Current time in MYT
+        current_time_obj = time.struct_time(current_time)
+        now = pytz.utc.localize(time.mktime(current_time_obj))  # UTC time
+        
+        # Target time for 5:00 PM MYT (Malaysia Time)
         target_hour = 17  # 5:00 PM
-        target_minute = 0  # 0 minutes
-        target_time = time.mktime((current_time.tm_year, current_time.tm_mon, current_time.tm_mday,
-                                   target_hour, target_minute, 0, current_time.tm_wday, current_time.tm_yday,
-                                   current_time.tm_isdst))
-        current_epoch = time.mktime(current_time)
-        delay = target_time - current_epoch
-
-        if delay < 0:
-            # If target time has already passed for today, schedule for tomorrow
-            delay += 86400  # Add 24 hours worth of seconds
+        target_time = now.replace(hour=target_hour, minute=0, second=0, microsecond=0)
+        
+        # If target time already passed today, schedule for tomorrow
+        if now > target_time:
+            target_time += timedelta(days=1)
+        
+        delay = (target_time - now).total_seconds()
         return delay
 
     try:
-        # Tunggu sehingga masa yang dijadualkan (5:00 PM)
+        # Wait until the scheduled time (5:00 PM)
         delay = calculate_time_to_post()
-        print(f"Waiting for {delay} seconds until 5:00 PM...")
+        print(f"Waiting for {delay} seconds until 5:00 PM MYT...")
         await asyncio.sleep(delay)
 
-        # Setelah menunggu, hantar mesej
+        # Send the message to all the groups
         for group_id in group_ids:
             await client.send_message(group_id, message)
-            print(f"Mesej dihantar ke kumpulan {group_id}!")
+            print(f"Message sent to group {group_id}!")
 
     except errors.ChatAdminRequiredError:
-        print("Akses ke kumpulan ini tidak dibenarkan.")
+        print("Access to this group is not allowed.")
         return
     except ValueError:
-        print("ID kumpulan tidak sah atau anda tidak mempunyai akses.")
+        print("Invalid group ID or you don't have access.")
         return
 
-# Jalankan fungsi untuk menghantar mesej
+# Run the function to send the message
 with client:
     client.loop.run_until_complete(send_message_repeatedly())
