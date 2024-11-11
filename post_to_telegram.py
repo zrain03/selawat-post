@@ -5,7 +5,7 @@ import os
 
 # Set your message and group IDs
 MESSAGE = "اللّٰهُمَّ صَلِّ وَسَلِّمْ عَلٰى سَيِّدِنَا مُحَمَّد\nAllahumma salli wasallim 'ala Sayyidina Muhammad"
-GROUP_IDS = [-1002288720559, -1002200241778]
+GROUP_IDS = [-1002071108412, -1002341101931]
 
 async def send_message():
     api_id = int(os.getenv('API_ID'))
